@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 
 version := "v1.2.3"
-settingsFile := "settings.ini"
+settingsFile := A_WorkingDir . "\settings.ini"
 
 
 
@@ -121,7 +121,7 @@ SaveSettings(settingsJson) {
     IniFile := A_WorkingDir . "\settings.ini"
 
     for key, val in settings {
-        if (key == "url" || key == "discordID" || key == "VipLink" || key == "Cosmetics" || key == "TravelingMerchant" || key == "CookingEvent" || key == "SearchList" || key == "CookingTime") {
+        if (key == "url" || key == "discordID" || key == "VipLink" || key == "Cosmetics" || key == "TravelingMerchant" || key == "CookingEvent" || key == "SearchList" || key == "CookingTime" || key == "SeasonPass") {
             IniWrite(val, IniFile, "Settings", key)
         }
     }
@@ -135,6 +135,7 @@ SaveSettings(settingsJson) {
         "GearCraftingItems", "GearCrafting",
         "SeedCraftingItems", "SeedCrafting",
         "EvoSeedsItems", "EvoSeeds",
+        "SeasonPassItems", "SeasonPass",
         ; "fallCosmeticsItems", "fallCosmetics",
         ; "fallGearsItems", "fallGears",
         ; "fallPetsItems", "fallPets",
@@ -156,21 +157,16 @@ SendSettings(){
 	settingsFile := A_WorkingDir . "\settings.ini"
     seedItems := getItems("Seeds")
     seed2Items := getItems("Seeds2")
-
     gearItems := getItems("Gears")
-
     EggItems := getItems("Eggs")
     Egg2Items := getItems("Eggs2")
-
     GearCraftingItems := getItems("GearCrafting")
-    
     SeedCraftingItems := getItems("SeedCrafting")
-    
     EvoSeedsItems := getItems("EvoSeeds")
-    ; fallCosmeticsItems := getItems("fallCosmetics")
-    ; fallGearsItems := getItems("fallGears")
-    ; fallPetsItems := getItems("fallPets")
-
+    
+    ; Hardcode Season Pass items since they're not in items.json
+    SeasonPassItems := ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Season Pass Levelup Lollipop", "Grow All", "Naval Wort"]
+    
     seedItems.Push("Seeds")
     seed2Items.Push("Seeds2")
     gearItems.Push("Gears")
@@ -179,10 +175,7 @@ SendSettings(){
     GearCraftingItems.Push("GearCrafting")
     SeedCraftingItems.Push("SeedCrafting")
     EvoSeedsItems.Push("EvoSeeds")
-    ; fallCosmeticsItems.Push("fallCosmetics")
-    ; fallGearsItems.Push("fallGears")
-    ; fallPetsItems.Push("fallPets")
-
+    SeasonPassItems.Push("SeasonPass")
 
     if (!FileExist(settingsFile)) {
         IniWrite("", settingsFile, "Settings", "url")
@@ -193,6 +186,8 @@ SendSettings(){
         IniWrite("0", settingsFile, "Settings", "CookingEvent")
         IniWrite("", settingsFile, "Settings", "SearchList")
         IniWrite("", settingsFile, "Settings", "CookingTime")
+        IniWrite("1", settingsFile, "Settings", "SeasonPass")
+        
         for i in seedItems {
             IniWrite("1", settingsFile, "Seeds", StrReplace(i, " ", ""))
         }
@@ -217,22 +212,17 @@ SendSettings(){
         for i in EvoSeedsItems {
             IniWrite("0", settingsFile, "EvoSeeds", StrReplace(i, " ", ""))
         }
-        ; for i in fallCosmeticsItems {
-        ;     IniWrite("0", settingsFile, "fallCosmetics", StrReplace(i, " ", ""))
-        ; }
-        ; for i in fallGearsItems {
-        ;     IniWrite("0", settingsFile, "fallGears", StrReplace(i, " ", ""))
-        ; }
-        ; for i in fallPetsItems {
-        ;     IniWrite("0", settingsFile, "fallPets", StrReplace(i, " ", ""))
-        ; }
+        for i in SeasonPassItems {
+            IniWrite("0", settingsFile, "SeasonPass", StrReplace(i, " ", "")) 
+        }
         Sleep(200)
     }
 
     Other := [
         "TravelingMerchant",
         "Cosmetics",
-        "CookingEvent"
+        "CookingEvent",
+        "SeasonPass"
     ]
 
     for item in Other {
@@ -250,95 +240,76 @@ SendSettings(){
       , CookingEvent:  IniRead(settingsFile, "Settings", "CookingEvent")
       , SearchList:  IniRead(settingsFile, "Settings", "SearchList")
       , CookingTime:  IniRead(settingsFile, "Settings", "CookingTime")
+      , SeasonPass:  IniRead(settingsFile, "Settings", "SeasonPass")
       , SeedItems: Map()
       , Seed2Items: Map()
       , GearItems: Map()
       , EggItems:  Map()
+      , Egg2Items: Map()
       , GearCraftingItems: Map()
       , SeedCraftingItems: Map()
       , EvoSeedsItems: Map()
-    ;   , fallCosmeticsItems: Map()
-    ;   , fallGearsItems: Map()
-    ;   , fallPetsItems: Map()
+      , SeasonPassItems: Map()
     }
 
     for item in seedItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Seeds", key, "1")
         IniWrite(value, settingsFile, "Seeds", key)
-        SettingsJson.SeedItems[item] := value
+        SettingsJson.SeedItems[key] := value
     }
     for item in seed2Items {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Seeds2", key, "0")
         IniWrite(value, settingsFile, "Seeds2", key)
-        SettingsJson.Seed2Items[item] := value
+        SettingsJson.Seed2Items[key] := value
     }
-
     for item in gearItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Gears", key, "1")
         IniWrite(value, settingsFile, "Gears", key)
-        SettingsJson.GearItems[item] := value
+        SettingsJson.GearItems[key] := value
     }
-
     for item in EggItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Eggs", key, "1")
         IniWrite(value, settingsFile, "Eggs", key)
-        SettingsJson.EggItems[key] := value
+        SettingsJson.EggItems[item] := value  ; ← Changed from [key] to [item]
     }
 
     for item in Egg2Items {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Eggs2", key, "0")
         IniWrite(value, settingsFile, "Eggs2", key)
-        SettingsJson.EggItems[key] := value
+        SettingsJson.Egg2Items[item] := value  ; ← Changed from [key] to [item]
     }
-
     for item in GearCraftingItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "GearCrafting", key, "0")
         IniWrite(value, settingsFile, "GearCrafting", key)
         SettingsJson.GearCraftingItems[key] := value
     }
-
     for item in SeedCraftingItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "SeedCrafting", key, "0")
         IniWrite(value, settingsFile, "SeedCrafting", key)
-        SettingsJson.GearCraftingItems[key] := value
+        SettingsJson.SeedCraftingItems[key] := value
     }
-
     for item in EvoSeedsItems {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "EvoSeeds", key, "0")
         IniWrite(value, settingsFile, "EvoSeeds", key)
         SettingsJson.EvoSeedsItems[key] := value
     }
-    ; for item in fallCosmeticsItems {
-    ;     key := StrReplace(item, " ", "")
-    ;     value := IniRead(settingsFile, "fallCosmetics", key, "0")
-    ;     IniWrite(value, settingsFile, "fallCosmetics", key)
-    ;     SettingsJson.fallCosmeticsItems[key] := value
-    ; }
-    ; for item in fallGearsItems {
-    ;     key := StrReplace(item, " ", "")
-    ;     value := IniRead(settingsFile, "fallGears", key, "0")
-    ;     IniWrite(value, settingsFile, "fallGears", key)
-    ;     SettingsJson.fallGearsItems[key] := value
-    ; }
-    ; for item in fallPetsItems {
-    ;     key := StrReplace(item, " ", "")
-    ;     value := IniRead(settingsFile, "fallPets", key, "0")
-    ;     IniWrite(value, settingsFile, "fallPets", key)
-    ;     SettingsJson.fallPetsItems[key] := value
-    ; }
-
+    for item in SeasonPassItems {
+        key := StrReplace(item, " ", "")
+        value := IniRead(settingsFile, "SeasonPass", key, "0")
+        IniWrite(value, settingsFile, "SeasonPass", key)
+        SettingsJson.SeasonPassItems[item] := value  ; ← Changed from [key] to [item]
+    }
 
 	MyWindow.PostWebMessageAsJson(JSON.stringify(SettingsJson))
 }
-
 
 
 

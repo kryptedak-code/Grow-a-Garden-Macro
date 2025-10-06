@@ -742,7 +742,9 @@ CheckStock(index, list, crafting := false){
 }
 
 buyShop(itemList, itemType, crafting := false){
-    if (itemType == "Event" || itemType == "Eggs" || itemType == "Eggs2"){
+    if (itemType == "SeasonPass"){
+        pos := 0.75
+    } else if (itemType == "Event" || itemType == "Eggs" || itemType == "Eggs2"){
         pos := 0.8
     } else {
         pos := 0.835
@@ -1060,6 +1062,7 @@ initShops(){
     if (Shopinit == true){
         if ((Mod(A_Min, 10) = 3 || Mod(A_Min, 10) = 8)) {
             global LastShopTime := nowUnix()
+            BuySeasonPass()
             BuySeeds()
             BuyGears()
             BuyEvoSeeds()
@@ -1098,9 +1101,10 @@ initShops(){
             Eggs2init := false
         }
     }
-
-
 }
+
+
+
 
 BuySeeds(){
     seedItems := getItems("Seeds")
@@ -1495,6 +1499,7 @@ MainLoop() {
     equipRecall()
     CameraCorrection()
     CookingEvent()
+    BuySeasonPass()
     BuySeeds()
     BuySeeds2()
     BuyGears()
@@ -1551,7 +1556,7 @@ ShowToolTip(){
     global LastGearCraftingTime
     global LastSeedCraftingTime
     global LastCookingTime
-
+    global LastSeasonPassTime
     global GearCraftingTime
     global SeedCraftingTime
 
@@ -1569,7 +1574,7 @@ ShowToolTip(){
     static cosmeticEnabled := IniRead(settingsFile, "Settings", "Cosmetics") + 0
     static merchantEnabled := IniRead(settingsFile, "Settings", "TravelingMerchant") + 0
     static CookingEnabled := IniRead(settingsFile, "Settings", "CookingEvent") + 0
-
+    static SeasonPassEnabled := IniRead(settingsFile, "Settings", "SeasonPass") + 0
 
     currentTime := nowUnix()
 
@@ -1594,6 +1599,11 @@ ShowToolTip(){
         static EvoSeedsTime := 300
         EvoSeedsRemaining := Max(0, EvoSeedsTime - (currentTime - LastShopTime))
         tooltipText .= "EvoSeeds: " (EvoSeedsRemaining // 60) ":" Format("{:02}", Mod(EvoSeedsRemaining, 60)) "`n"
+    }
+    if (SeasonPassEnabled) {
+        static SeasonPassTime := 300  // Changed from 3600 to 300
+        SeasonPassRemaining := Max(0, SeasonPassTime - (currentTime - LastShopTime))  // Changed from LastSeasonPassTime to LastShopTime
+        tooltipText .= "Season Pass: " (SeasonPassRemaining // 60) ":" Format("{:02}", Mod(SeasonPassRemaining, 60)) "`n"
     }
     ; if (fallCosmeticsEnabled) {
     ;     static fallCosmeticsTime := 3600
@@ -1678,6 +1688,7 @@ F3::
     ; Gdip_SaveBitmapToFile(pBMScreen,"ss.png")
     ; Gdip_DisposeImage(pBMScreen)
     PauseMacro()
+    BuySeasonPass()
 }
 
 CookingEvent(){
@@ -1750,6 +1761,137 @@ BuyEvoSeeds(){
     return 1
 }
 
+BuySeasonPassItems(){
+    clickX := 1073
+    clickY := 900
+    buyButtonX := 1029
+    buyButtonY := 738
+    
+    ; Initial scroll to top
+    MouseMove(clickX, clickY)
+    Loop 14 {
+        Send("{WheelUp}")
+        Sleep 20
+    }
+    Sleep(250)
+    Click
+    Sleep(250)
+    Loop 12 {
+        Send("{WheelUp}")
+        Sleep 20
+    }
+    relativeMouseMove(0.5, 0.4)
+    Sleep(250)
+    
+    Loop 7 {
+        if (A_Index > 1) {
+            MouseMove(clickX, clickY)
+        }
+        
+        Click
+        Sleep(350)
+        
+        ; Check which item and buy if enabled
+        itemName := ""
+        switch A_Index {
+            case 1: itemName := "PrimeCrate"
+            case 2: itemName := "EggYolkMat"
+            case 3: itemName := "SilverFertilizer"
+            case 4: itemName := "PrimeSeedPack"
+            case 5: itemName := "SeasonPassLevelupLollipop"
+            case 6: itemName := "GrowAll"
+            case 7: itemName := "NavalWort"
+        }
+        
+        if (CheckSetting("SeasonPass", itemName)){
+            MouseMove(buyButtonX, buyButtonY + (A_Index*15))
+            Sleep(200)
+            Click
+            Sleep(500)
+        } else {
+            Sleep(200)
+        }
+    }
+}
+
+CheckStockSeasonPass(index, list){
+    ; Adjusted capture area for Season Pass green stock button
+    ActivateRoblox()
+    hwnd := GetRobloxHWND()
+    GetRobloxClientPos(hwnd)
+    
+    captureWidth := 200  ; Wider capture
+    captureHeight := windowHeight // 2 + 100
+    
+    ; Shifted right compared to regular shops
+    captureX := windowX + (windowWidth // 2) - (captureWidth // 2) + 50  ; +50 offset
+    captureY := windowY + (windowHeight // 2) - (captureHeight // 2) + 20
+    
+    pBMScreen := Gdip_BitmapFromScreen(captureX "|" captureY "|" captureWidth "|" captureHeight)
+    If (Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock"], &OutputList, , , , , 3,,3) = 1 || Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock2"], &OutputList , , , , , 3,,3) = 1) {
+        Cords := StrSplit(OutputList, ",")
+        x := Cords[1] + captureX - 2
+        y := Cords[2] + captureY - 10
+        MouseMove(x, y)
+        Sleep(25)
+        Click
+        Gdip_DisposeImage(pBMScreen)
+    } else {
+        Gdip_DisposeImage(pBMScreen)
+        return 0
+    }
+    
+    loop {
+        pBMScreen := Gdip_BitmapFromScreen(captureX "|" captureY "|" captureWidth "|" captureHeight)
+        If (Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock"], &OutputList, , , , , 3,,3) = 1 || Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock2"], &OutputList , , , , , 3,,3) = 1) {
+            Cords := StrSplit(OutputList, ",")
+            x := Cords[1] + captureX - 5
+            y := Cords[2] + captureY - 10
+            MouseMove(x, y)
+            Click
+            Gdip_DisposeImage(pBMScreen)
+            Sleep(25)
+        } else {
+            Gdip_DisposeImage(pBMScreen)
+            PlayerStatus("Bought " list[index] "!", "0x22e6a8",,false)
+            return 1
+        }
+        
+        if (A_index >= 5){
+            SpamClick(5)
+        }
+        
+        if (A_index == 50) {
+            Gdip_DisposeImage(pBMScreen)
+            return 0
+        }
+    }
+}
+
+BuySeasonPass(){
+    if !(CheckSetting("Settings", "SeasonPass")){
+        return 0
+    }
+
+    relativeMouseMove(92/windowWidth, 563/windowHeight)
+    Sleep(300)
+    Click
+    Sleep(1500)
+    
+    relativeMouseMove(1371/windowWidth, 277/windowHeight)
+    Sleep(300)
+    Click
+    Sleep(2000)
+    
+    if !DetectShop("Season Pass"){
+        return 0 
+    }
+    
+    seasonPassItems := ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Levelup Lollipop", "Grow All", "Naval Wort"]
+    BuySeasonPassItems()
+    CloseClutter()
+    return 1
+}
 
 ; BuyfallGears(){
 ;     if !(CheckSetting("fallGears", "fallGears")){

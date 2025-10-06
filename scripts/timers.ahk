@@ -8,6 +8,7 @@ LastSeeds2Time := nowUnix()
 LastEggs2Time := nowUnix()
 LastEggsTime := nowUnix()
 LastEvoSeedsTime := nowUnix()
+LastSeasonPassTime := nowUnix()
 ; LastfallCosmeticsTime := nowUnix()
 ; LastfallGearsTime := nowUnix()
 ; LastfallPetsTime := nowUnix()
@@ -80,7 +81,10 @@ RewardChecker() {
     if (currentTime - LastCookingTime >= CookingTime) {
         Rewardlist.Push("Cooking")
     }
-
+    if (currentTime - LastSeasonPassTime >= 3600) {
+        LastSeasonPassTime := currentTime
+        Rewardlist.Push("SeasonPass")
+    }
     return Rewardlist
 }
 
@@ -142,6 +146,9 @@ RewardInterupt() {
             Sleep(2000)
             global LastCookingTime
             LastCookingTime := nowUnix()
+        }
+        if (v = "SeasonPass"){
+            BuySeasonPass()
         }
     }
     

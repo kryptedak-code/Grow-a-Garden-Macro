@@ -3,8 +3,6 @@ function switchTab(tabId) {
   document.getElementById(tabId).classList.add('active');
 }
 
-
-
 let cachedData = null;
 
 async function fetchAllItems() {
@@ -25,23 +23,18 @@ async function getItemJSON(category) {
   return data[category];
 }
 
-
-
 async function onSaveClick() {
   const seedItems = await getItems("Seeds");
   const seed2Items = await getItems("Seeds2");
   const gearItems = await getItems("Gears");
   const EggItems = await getItems("Eggs");
   const Egg2Items = await getItems("Eggs2");
-
   const GearCraftingItems = await getItems("GearCrafting");
-
   const SeedCraftingItems = await getItems("SeedCrafting");
-
   const EvoSeedsItems = await getItems("EvoSeeds");
-  // const fallCosmeticsItems = await getItems("fallCosmetics");
-  // const fallGearsItems = await getItems("fallGears");
-  // const fallPetsItems = await getItems("fallPets");
+  
+  // Hardcoded Season Pass items
+const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Season Pass Levelup Lollipop", "Grow All", "Naval Wort"];
 
   seedItems.push("Seeds");
   seed2Items.push("Seeds2");
@@ -51,9 +44,7 @@ async function onSaveClick() {
   GearCraftingItems.push("GearCrafting");
   SeedCraftingItems.push("SeedCrafting");
   EvoSeedsItems.push("EvoSeeds");
-  // fallCosmeticsItems.push("fallCosmetics");
-  // fallGearsItems.push("fallGears");
-  // fallPetsItems.push("fallPets");
+  SeasonPassItems.push("SeasonPass");
 
   const cfg = {
     url: document.getElementById('url').value,
@@ -61,9 +52,10 @@ async function onSaveClick() {
     VipLink: document.getElementById('VipLink').value,
     TravelingMerchant: +document.getElementById('TravelingMerchant').checked,
     Cosmetics: +document.getElementById('Cosmetics').checked,
-    CookingEvent:  +document.getElementById('CookingEvent').checked,
-    SearchList:  document.getElementById('SearchList').value,
-    CookingTime:  document.getElementById('CookingTime').value,
+    CookingEvent: +document.getElementById('CookingEvent').checked,
+    SearchList: document.getElementById('SearchList').value,
+    CookingTime: document.getElementById('CookingTime').value,
+    SeasonPass: +document.getElementById('SeasonPass').checked,
     seedItems: {},
     seed2Items: {},
     gearItems: {},
@@ -72,9 +64,7 @@ async function onSaveClick() {
     GearCraftingItems: {},
     SeedCraftingItems: {},
     EvoSeedsItems: {},
-    // fallCosmeticsItems: {},
-    // fallGearsItems: {},
-    // fallPetsItems: {},
+    SeasonPassItems: {},
   };
 
   const allLists = {
@@ -86,9 +76,7 @@ async function onSaveClick() {
     GearCraftingItems,
     SeedCraftingItems,
     EvoSeedsItems,
-    // fallCosmeticsItems,
-    // fallGearsItems,
-    // fallPetsItems,
+    SeasonPassItems,
   };
 
   for (const [listName, items] of Object.entries(allLists)) {
@@ -99,26 +87,25 @@ async function onSaveClick() {
         cfg[listName][name] = element.checked;
       }
     });
-}
+  }
 
   ahk.Save.Func(JSON.stringify(cfg));
   console.log(cfg);
 }
-  
 
-  
 function applySettings(a) {
     const s = a.data;
     console.log("Applying settings with these settings: ", s);
 
-    document.getElementById('url').value       = s.url;
+    document.getElementById('url').value = s.url;
     document.getElementById('discordID').value = s.discordID;
-    document.getElementById('VipLink').value   = s.VipLink;
-    document.getElementById('Cosmetics').checked  = !!+s.Cosmetics
-    document.getElementById('TravelingMerchant').checked  = !!+s.TravelingMerchant
-    document.getElementById('CookingEvent').checked  = !!+s.CookingEvent
-    document.getElementById('SearchList').value  = s.SearchList
-    document.getElementById('CookingTime').value  = s.CookingTime
+    document.getElementById('VipLink').value = s.VipLink;
+    document.getElementById('Cosmetics').checked = !!+s.Cosmetics
+    document.getElementById('TravelingMerchant').checked = !!+s.TravelingMerchant
+    document.getElementById('CookingEvent').checked = !!+s.CookingEvent
+    document.getElementById('SearchList').value = s.SearchList
+    document.getElementById('CookingTime').value = s.CookingTime
+    document.getElementById('SeasonPass').checked = !!+s.SeasonPass
 
     const allItems = {
       SeedItems: s.SeedItems,
@@ -129,41 +116,32 @@ function applySettings(a) {
       GearCraftingItems: s.GearCraftingItems,
       SeedCraftingItems: s.SeedCraftingItems,
       EvoSeedsItems: s.EvoSeedsItems,
-      // fallCosmeticsItems: s.fallCosmeticsItems,
-      // fallGearsItems: s.fallGearsItems,
-      // fallPetsItems: s.fallPetsItems,
+      SeasonPassItems: s.SeasonPassItems,
     };
 
-    for (const [listName, items] of Object.entries(allItems)) {
-      for (const item in items) {
-        const formattedItem = item.replace(/\s+/g, '');
+    for (const [listName, itemsMap] of Object.entries(allItems)) {
+      for (const [itemName, itemValue] of Object.entries(itemsMap)) {
+        const formattedItem = itemName.replace(/\s+/g, '');
         const element = document.getElementById(formattedItem);
         if (element) {
-          element.checked = !!+items[item];
-          console.log(element, items[item])
+          element.checked = !!+itemValue;
+          console.log(element, itemValue)
         }
       }
     }
-
 }
 
-
 async function AddHtml() {
-  const categories = [
-    "Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "GearCrafting", "SeedCrafting", "EvoSeeds"
-    // "fallPets", 'fallGears', "fallCosmetics"
-    ];
+  const categories = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "GearCrafting", "SeedCrafting", "EvoSeeds"];
 
   for (const category of categories) {
     const items = await getItemJSON(category);
-
     const rewardGrid = document.querySelector(`#${category}Grid`);
     if (!rewardGrid) continue;
 
     for (const item of items) {
       const sanitizedName = item.name.replace(/\s+/g, '');
       const imgPath = item.image || `../../images/${category}/${item.name}.webp`;
-
       const inputType = (category === "GearCrafting" || category === "SeedCrafting") ? "radio" : "checkbox";
       const inputName = (inputType === "radio") ? `name="${category}"` : "";
 
@@ -178,20 +156,45 @@ async function AddHtml() {
           <label><input type="${inputType}" id="${sanitizedName}" ${inputName}>Claim</label>
         </div>
       `;
-
       rewardGrid.appendChild(div);
     }
   }
+
+  // Special handling for Season Pass (hardcoded items)
+  const seasonPassItems = [
+    {name: "Prime Crate"},
+    {name: "Egg Yolk Mat"},
+    {name: "Silver Fertilizer"},
+    {name: "Prime Seed Pack"},
+    {name: "Season Pass Levelup Lollipop"},
+    {name: "Grow All"},
+    {name: "Naval Wort"}
+  ];
+
+  const seasonPassGrid = document.querySelector('#SeasonPassGrid');
+  if (seasonPassGrid) {
+    for (const item of seasonPassItems) {
+      const sanitizedName = item.name.replace(/\s+/g, '');
+      const div = document.createElement("div");
+      div.className = "reward-box";
+      div.innerHTML = `
+        <div class="reward-header">
+          <span>${item.name}</span>
+        </div>
+        <div class="reward-options">
+          <label><input type="checkbox" id="${sanitizedName}">Claim</label>
+        </div>
+      `;
+      seasonPassGrid.appendChild(div);
+    }
+  }
 }
-
-
 
 document.addEventListener("DOMContentLoaded", async () => {
     await AddHtml()
     ahk.ReadSettings.Func()
     window.chrome.webview.addEventListener('message', applySettings);
-  })
-
+})
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".SelectAll").forEach(selectAllCheckbox => {
@@ -203,10 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       checkboxes.forEach(cb => {
         const isSelectAll = cb.classList.contains("SelectAll");
-        const isEnableCheckbox = [
-          "Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "EvoSeeds", 
-          // "fallPets", 'fallGears', "fallCosmetics"
-        ].includes(cb.id);
+        const isEnableCheckbox = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "EvoSeeds", "SeasonPass"].includes(cb.id);
         if (!isSelectAll && !isEnableCheckbox) {
           cb.checked = selectAllCheckbox.checked;
         }
@@ -215,27 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Html cool stuff
-
+// HTML cool stuff
 document.querySelectorAll('.tabs button').forEach(button => {
   button.addEventListener('click', function() {
     document.querySelectorAll('.tabs button').forEach(btn => {
@@ -248,85 +228,3 @@ document.querySelectorAll('.tabs button').forEach(button => {
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.tabs button').classList.add('tab-button-active');
 });
-
-
-document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
-  const selected = dropdown.querySelector('.custom-dropdown-selected');
-  const options = dropdown.querySelector('.custom-dropdown-options');
-  const hiddenInput = document.getElementById('hiddenSelector');
-
-  selected.addEventListener('click', () => {
-    options.style.display = options.style.display === 'block' ? 'none' : 'block';
-  });
-
-  options.querySelectorAll('[data-value]').forEach(option => {
-    option.addEventListener('click', () => {
-      const value = option.getAttribute('data-value');
-      selected.textContent = option.textContent;
-      hiddenInput.value = value;
-      options.style.display = 'none';
-    });
-  });
-
-  document.addEventListener('click', e => {
-    if (!dropdown.contains(e.target)) {
-      options.style.display = 'none';
-    }
-  });
-});
-
-
-document.querySelectorAll('.custom-dropdown-options div[data-value]').forEach(option => {
-  option.addEventListener('click', function () {
-    const selected = this.closest('.custom-dropdown').querySelector('.custom-dropdown-selected');
-    const selectedKey = selected.getAttribute('data-value');
-
-    const hiddenInput = document.querySelector(`input[type="hidden"][data-value="${selectedKey}"]`);
-
-    const value = this.getAttribute('data-value');
-    const text = this.textContent.trim();
-
-    if (hiddenInput) {
-      hiddenInput.value = value;
-    }
-
-    const img = this.querySelector('img');
-    if (img) {
-      const newImg = img.cloneNode(true);
-      selected.innerHTML = ''; 
-      selected.appendChild(newImg);
-      selected.append(' ' + text);
-    } else {
-      selected.textContent = text;
-    }
-  });
-});
-
-
-
-
-
-
-function selectDropdownValueByData(value) {
-  const option = document.querySelector(`.custom-dropdown-options div[data-value="${value}"]`);
-  if (!option) return;
-
-  const dropdown = option.closest('.custom-dropdown');
-  const selected = dropdown.querySelector('.custom-dropdown-selected');
-  const hiddenInput = document.getElementById('hiddenSelector');
-  const text = option.textContent.trim();
-
-  hiddenInput.value = value;
-
-  const img = option.querySelector('img');
-  if (img) {
-    const newImg = img.cloneNode(true);
-    selected.innerHTML = '';
-    selected.appendChild(newImg);
-    selected.append(' ' + text);
-  } else {
-    selected.textContent = text;
-  }
-
-  dropdown.querySelector('.custom-dropdown-options').style.display = 'none';
-}
