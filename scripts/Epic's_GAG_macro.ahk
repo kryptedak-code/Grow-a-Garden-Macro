@@ -674,7 +674,7 @@ Crafting(Recipeitems, settingName, Names){
             ; }
             Sleep(1000)
             Send("{f}")
-            Sleep(500)
+            Sleep(1000)
             Send("{" Ekey "}")
             Send("{" Ekey "}")
             Sleep(1000)
@@ -740,6 +740,7 @@ CheckStock(index, list, crafting := false){
     }
 
 }
+
 
 buyShop(itemList, itemType, crafting := false){
     if (itemType == "SeasonPass"){
@@ -1065,7 +1066,6 @@ initShops(){
             BuySeasonPass()
             BuySeeds()
             BuyGears()
-            BuyEvoSeeds()
             Shopinit := false
         }
     } else if (Egginit == true){
@@ -1101,10 +1101,9 @@ initShops(){
             Eggs2init := false
         }
     }
+
+
 }
-
-
-
 
 BuySeeds(){
     seedItems := getItems("Seeds")
@@ -1322,20 +1321,15 @@ GearCraft(){
     Send("{" WKey " up}")
     Sleep(1000)
     GearRecipe := [
-        { Name: "Lightning Rod", Materials: ["Basic Sprinkler", "Advanced Sprinkler", "Godly Sprinkler"], CraftTime: 2700 },
-        { Name: "Tanning Mirror", Materials: ["Basic Sprinkler", "Advanced Sprinkler", "Godly Sprinkler"], CraftTime: 2700 },
-        { Name: "Reclaimer", Materials: ["Common Egg", "Harvest Tool"], CraftTime: 1500 },
-        { Name: "Event Lantern", Materials: ["Recall Wrench", "Apple kg"], CraftTime: 10 },
-        { Name: "Mutation Spray Glimmering", Materials: ["Cleaning Spray", "Orange Tulip Seed", "Daffodil Seed", "Mango kg"], CraftTime: 900 },
-        { Name: "Stalk Sprout Sprinkler", Materials: ["Bamboo kg", "Beanstalk kg", "Mushroom kg", "Advanced Sprinkler"], CraftTime: 3600 },
-        { Name: "Mutation Spray Choc", Materials: ["Cleaning Spray", "Cacao kg"], CraftTime: 720 },
-        { Name: "Mutation Spray Chilled", Materials: ["Cleaning Spray", "Godly Sprinkler"], CraftTime: 300 },
-        { Name: "Mutation Spray Shocked", Materials: ["Cleaning Spray", "Lightning Rod"], CraftTime: 1800 },
-        { Name: "Anti Bee Egg", Materials: ["Bee Egg"], CraftTime: 7200 },
-        { Name: "Small Toy", Materials: ["Common Egg", "Coconut Seed", "Coconut kg"], CraftTime: 600 },
-        { Name: "Small Treat", Materials: ["Common Egg", "Dragon Fruit Seed", "Blueberry kg"], CraftTime: 600 },
-        { Name: "Pet Pouch", Materials: ["Common Egg", "Corndog fd", "Small Pet Treat", "Small Pet Toy"], CraftTime: 1800 },
-        { Name: "Pack Bee", Materials: ["Anti Bee Egg", "Sunflower kg", "Purple Dahila kg"], CraftTime: 14400 },
+        { Name: "Lightning Rod", Materials: ["Poop"], CraftTime: 2700 },
+        { Name: "Tanning Mirror", Materials: ["Poop"], CraftTime: 2700 },
+        { Name: "Reclaimer", Materials: ["Poop"], CraftTime: 1500 },
+        { Name: "Event Lantern", Materials: ["Poop"], CraftTime: 10 },
+        { Name: "Anti Bee Egg", Materials: ["Poop"], CraftTime: 7200 },
+        { Name: "Small Toy", Materials: ["Poop"], CraftTime: 600 },
+        { Name: "Small Treat", Materials: ["Poop"], CraftTime: 600 },
+        { Name: "Pet Pouch", Materials: ["Poop"], CraftTime: 1800 },
+        { Name: "Pack Bee", Materials: ["Poop"], CraftTime: 14400 },
         
         
     ]
@@ -1366,13 +1360,11 @@ SeedCraft(){
     Send("{" WKey " up}")
     Sleep(1000)
     SeedRecipe := [
-        { Name: "Mandrake", Materials: ["Carrot Seed", "Beanstalk kg", "Common Egg"], CraftTime: 300 },
-        { Name: "Twisted Tangle", Materials: ["Cactus Seed", "Bamboo Seed", "Cactus kg", "Mango kg"], CraftTime: 900 },
-        { Name: "Veinpetal", Materials: ["Orange Tulip Seed", "Daffodil Seed", "Beanstalk kg", "Burning bud kg"], CraftTime: 1200 },
-        { Name: "Horsetail", Materials: ["Daffodil Seed", "Bamboo kg", "Corn kg"], CraftTime: 900 },
-        { Name: "Lingonberry", Materials: ["Blueberry Seed", "Blueberry Seed", "Blueberry Seed", "Horsetail kg"], CraftTime: 900 },
-        { Name: "Amber Spine", Materials: ["Cactus Seed", "Pumpkin kg", "Horsetail kg"], CraftTime: 1800 },        
-        
+        { Name: "Mandrake", Materials: ["Poop"], CraftTime: 300 },
+        { Name: "Evo Apple I", Materials: ["Poop"], CraftTime: 600 },        
+        { Name: "Evo Apple II", Materials: ["Poop"], CraftTime: 1200 },        
+        { Name: "Evo Apple III", Materials: ["Poop"], CraftTime: 1800 },        
+        { Name: "Evo Apple IV", Materials: ["Poop"], CraftTime: 2400 },        
     ]
     SeedNames := getItems("SeedCrafting")
 
@@ -1505,7 +1497,6 @@ MainLoop() {
     BuyGears()
     BuyEggs()
     BuyEggs2()
-    BuyEvoSeeds()
     ; BuyEvent()
     BuyCosmetics()
     global LastCookingTime := nowUnix()
@@ -1548,7 +1539,7 @@ ShowToolTip(){
     global LastSeeds2Time
     global LastEggs2Time
     global LastEggsTime
-    global LastEvoSeedsTime
+    ; global LastEvoSeedsTime
     ; global LastfallCosmeticsTime
     ; global LastfallGearsTime
     ; global LastfallPetsTime
@@ -1556,7 +1547,7 @@ ShowToolTip(){
     global LastGearCraftingTime
     global LastSeedCraftingTime
     global LastCookingTime
-    global LastSeasonPassTime
+
     global GearCraftingTime
     global SeedCraftingTime
 
@@ -1565,7 +1556,7 @@ ShowToolTip(){
     static Eggs2Enabled := IniRead(settingsFile, "Eggs2", "Eggs2") + 0
     static GearsEnabled := IniRead(settingsFile, "Gears", "Gears") + 0
     static EggsEnabled := IniRead(settingsFile, "Eggs", "Eggs") + 0
-    static EvoSeedsEnabled := IniRead(settingsFile, "EvoSeeds", "EvoSeeds") + 0
+    ; static EvoSeedsEnabled := IniRead(settingsFile, "EvoSeeds", "EvoSeeds") + 0
     ; static fallCosmeticsEnabled := IniRead(settingsFile, "fallCosmetics", "fallCosmetics") + 0
     ; static fallGearsEnabled := IniRead(settingsFile, "fallGears", "fallGears") + 0
     ; static fallPetsEnabled := IniRead(settingsFile, "fallPets", "fallPets") + 0
@@ -1595,16 +1586,11 @@ ShowToolTip(){
         GearRemaining := Max(0, GearTime - (currentTime - LastShopTime))
         tooltipText .= "Gears: " (GearRemaining // 60) ":" Format("{:02}", Mod(GearRemaining, 60)) "`n"
     }
-    if (EvoSeedsEnabled) {
-        static EvoSeedsTime := 300
-        EvoSeedsRemaining := Max(0, EvoSeedsTime - (currentTime - LastShopTime))
-        tooltipText .= "EvoSeeds: " (EvoSeedsRemaining // 60) ":" Format("{:02}", Mod(EvoSeedsRemaining, 60)) "`n"
-    }
-    if (SeasonPassEnabled) {
-        static SeasonPassTime := 300  // Changed from 3600 to 300
-        SeasonPassRemaining := Max(0, SeasonPassTime - (currentTime - LastShopTime))  // Changed from LastSeasonPassTime to LastShopTime
-        tooltipText .= "Season Pass: " (SeasonPassRemaining // 60) ":" Format("{:02}", Mod(SeasonPassRemaining, 60)) "`n"
-    }
+    ; if (EvoSeedsEnabled) {
+    ;     static EvoSeedsTime := 300
+    ;     EvoSeedsRemaining := Max(0, EvoSeedsTime - (currentTime - LastShopTime))
+    ;     tooltipText .= "EvoSeeds: " (EvoSeedsRemaining // 60) ":" Format("{:02}", Mod(EvoSeedsRemaining, 60)) "`n"
+    ; }
     ; if (fallCosmeticsEnabled) {
     ;     static fallCosmeticsTime := 3600
     ;     fallCosmeticsRemaining := Max(0, fallCosmeticsTime - (currentTime - LastfallCosmeticsTime))
@@ -1672,13 +1658,18 @@ ShowToolTip(){
         tooltipText .= "Seed Crafting: " seedM ":" Format("{:02}", seedS) "`n"
     }
     
+    if (SeasonPassEnabled) {
+        static SeasonPassTime := 300
+        SeasonPassRemaining := Max(0, SeasonPassTime - (currentTime - LastShopTime))
+        tooltipText .= "Season Pass: " (SeasonPassRemaining // 60) ":" Format("{:02}", Mod(SeasonPassRemaining, 60)) "`n"
+    }
 
     ToolTip(tooltipText, 100, 100)
 }
 
 
 
-F3::
+F3:
 {
     ; ActivateRoblox()
     ; ResizeRoblox()
@@ -1688,7 +1679,6 @@ F3::
     ; Gdip_SaveBitmapToFile(pBMScreen,"ss.png")
     ; Gdip_DisposeImage(pBMScreen)
     PauseMacro()
-    BuySeasonPass()
 }
 
 CookingEvent(){
@@ -1736,38 +1726,12 @@ CookingEvent(){
 }
 
 
-
-
-BuyEvoSeeds(){
-    if !(CheckSetting("EvoSeeds", "EvoSeeds")){
-        return 0
-    }
-
-    PlayerStatus("Going to EvoSeeds Shop!", "0x22e6a8",,false,,false)
-
-    searchItem("Event Lantern")
-    clickItem("Event Lantern", "Event Lantern")
-
-    Sleep(1500)
-    Walk(500, Akey)
-    Sleep(500)
-    Send("{" Ekey "}")
-    clickOption(2,5)
-    if !DetectShop("EvoSeeds"){
-        return 0 
-    }
-    buyShop(getItems("EvoSeeds"), "EvoSeeds")
-    CloseClutter()
-    return 1
-}
-
 BuySeasonPassItems(){
     clickX := 1073
     clickY := 900
     buyButtonX := 1029
     buyButtonY := 738
     
-    ; Initial scroll to top
     MouseMove(clickX, clickY)
     Loop 14 {
         Send("{WheelUp}")
@@ -1791,7 +1755,6 @@ BuySeasonPassItems(){
         Click
         Sleep(350)
         
-        ; Check which item and buy if enabled
         itemName := ""
         switch A_Index {
             case 1: itemName := "PrimeCrate"
@@ -1806,64 +1769,13 @@ BuySeasonPassItems(){
         if (CheckSetting("SeasonPass", itemName)){
             MouseMove(buyButtonX, buyButtonY + (A_Index*15))
             Sleep(200)
-            Click
+            Loop 3 {
+                Click
+                Sleep(100)
+            }
             Sleep(500)
         } else {
             Sleep(200)
-        }
-    }
-}
-
-CheckStockSeasonPass(index, list){
-    ; Adjusted capture area for Season Pass green stock button
-    ActivateRoblox()
-    hwnd := GetRobloxHWND()
-    GetRobloxClientPos(hwnd)
-    
-    captureWidth := 200  ; Wider capture
-    captureHeight := windowHeight // 2 + 100
-    
-    ; Shifted right compared to regular shops
-    captureX := windowX + (windowWidth // 2) - (captureWidth // 2) + 50  ; +50 offset
-    captureY := windowY + (windowHeight // 2) - (captureHeight // 2) + 20
-    
-    pBMScreen := Gdip_BitmapFromScreen(captureX "|" captureY "|" captureWidth "|" captureHeight)
-    If (Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock"], &OutputList, , , , , 3,,3) = 1 || Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock2"], &OutputList , , , , , 3,,3) = 1) {
-        Cords := StrSplit(OutputList, ",")
-        x := Cords[1] + captureX - 2
-        y := Cords[2] + captureY - 10
-        MouseMove(x, y)
-        Sleep(25)
-        Click
-        Gdip_DisposeImage(pBMScreen)
-    } else {
-        Gdip_DisposeImage(pBMScreen)
-        return 0
-    }
-    
-    loop {
-        pBMScreen := Gdip_BitmapFromScreen(captureX "|" captureY "|" captureWidth "|" captureHeight)
-        If (Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock"], &OutputList, , , , , 3,,3) = 1 || Gdip_ImageSearch(pBMScreen, bitmaps["GreenStock2"], &OutputList , , , , , 3,,3) = 1) {
-            Cords := StrSplit(OutputList, ",")
-            x := Cords[1] + captureX - 5
-            y := Cords[2] + captureY - 10
-            MouseMove(x, y)
-            Click
-            Gdip_DisposeImage(pBMScreen)
-            Sleep(25)
-        } else {
-            Gdip_DisposeImage(pBMScreen)
-            PlayerStatus("Bought " list[index] "!", "0x22e6a8",,false)
-            return 1
-        }
-        
-        if (A_index >= 5){
-            SpamClick(5)
-        }
-        
-        if (A_index == 50) {
-            Gdip_DisposeImage(pBMScreen)
-            return 0
         }
     }
 }
@@ -1892,6 +1804,30 @@ BuySeasonPass(){
     CloseClutter()
     return 1
 }
+
+; BuyEvoSeeds(){
+;     if !(CheckSetting("EvoSeeds", "EvoSeeds")){
+;         return 0
+;     }
+
+;     PlayerStatus("Going to EvoSeeds Shop!", "0x22e6a8",,false,,false)
+
+;     searchItem("Event Lantern")
+;     clickItem("Event Lantern", "Event Lantern")
+
+;     Sleep(1500)
+;     Walk(500, Akey)
+;     Sleep(500)
+;     Send("{" Ekey "}")
+;     clickOption(2,5)
+;     if !DetectShop("EvoSeeds"){
+;         return 0 
+;     }
+;     buyShop(getItems("EvoSeeds"), "EvoSeeds")
+;     CloseClutter()
+;     return 1
+; }
+
 
 ; BuyfallGears(){
 ;     if !(CheckSetting("fallGears", "fallGears")){

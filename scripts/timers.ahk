@@ -7,11 +7,7 @@ LastShopTime := nowUnix()
 LastSeeds2Time := nowUnix()
 LastEggs2Time := nowUnix()
 LastEggsTime := nowUnix()
-LastEvoSeedsTime := nowUnix()
 LastSeasonPassTime := nowUnix()
-; LastfallCosmeticsTime := nowUnix()
-; LastfallGearsTime := nowUnix()
-; LastfallPetsTime := nowUnix()
 LastMerchantTime := nowUnix()
 
 LastGearCraftingTime := nowUnix()
@@ -22,9 +18,7 @@ LastCookingTime := nowUnix()
 LastCosmetics := nowUnix()
 
 RewardChecker() {
-    global LastGearCraftingTime, EventCraftingtime, LastSeedCraftingTime, LastCookingTime, LastShopTime, LastSeeds2Time, LastEggsTime, LastCosmetics, LastMerchantTime, LastEggs2Time,
-    LastEvoSeedsTime 
-    ; , LastfallPetsTime, lastfallGearsTime, LastfallCosmeticsTime
+    global LastGearCraftingTime, EventCraftingtime, LastSeedCraftingTime, LastCookingTime, LastShopTime, LastSeeds2Time, LastEggsTime, LastCosmetics, LastMerchantTime, LastEggs2Time, LastSeasonPassTime
 
     static CookingTime := Integer(IniRead(settingsFile, "Settings", "CookingTime") * 1.1)
 
@@ -37,7 +31,6 @@ RewardChecker() {
         LastShopTime := currentTime
         Rewardlist.Push("Seeds")
         Rewardlist.Push("Gears")
-        Rewardlist.Push("EvoSeeds")
         
     }
     if (currentTime - LastSeeds2Time >= 3600) {
@@ -52,18 +45,6 @@ RewardChecker() {
         LastEggs2Time := currentTime
         Rewardlist.Push("Eggs2")
     }
-    ; if (currentTime - LastfallCosmeticsTime >= 3600) {
-    ;     LastfallCosmeticsTime := currentTime
-    ;     Rewardlist.Push("fallCosmetics")
-    ; }
-    ; if (currentTime - LastfallGearsTime >= 3600) {
-    ;     LastfallGearsTime := currentTime
-    ;     Rewardlist.Push("fallGears")
-    ; }
-    ; if (currentTime - LastfallPetsTime >= 3600) {
-    ;     LastfallPetsTime := currentTime
-    ;     Rewardlist.Push("fallPets")
-    ; }
     if (currentTime - LastMerchantTime >= 3600) {
         LastMerchantTime := currentTime
         Rewardlist.Push("TravelingMerchant")
@@ -81,7 +62,7 @@ RewardChecker() {
     if (currentTime - LastCookingTime >= CookingTime) {
         Rewardlist.Push("Cooking")
     }
-    if (currentTime - LastSeasonPassTime >= 3600) {
+    if (currentTime - LastSeasonPassTime >= 300) {
         LastSeasonPassTime := currentTime
         Rewardlist.Push("SeasonPass")
     }
@@ -111,18 +92,6 @@ RewardInterupt() {
         if (v = "Eggs2") {
             BuyEggs2()
         }
-        if (v = "EvoSeeds"){
-            BuyEvoSeeds()
-        }
-        ; if (v = "fallCosmetics"){
-        ;     BuyfallCosmetics()
-        ; }
-        ; if (v = "fallGears"){
-        ;     BuyfallGears()
-        ; }
-        ; if (v = "fallPets"){
-        ;     BuyfallPets()
-        ; }
         if (v = "GearCrafting") {
             GearCraft()
             Sleep(2000)
@@ -158,5 +127,3 @@ RewardInterupt() {
         return 1
     }
 }
-
-

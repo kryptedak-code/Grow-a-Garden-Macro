@@ -31,10 +31,9 @@ async function onSaveClick() {
   const Egg2Items = await getItems("Eggs2");
   const GearCraftingItems = await getItems("GearCrafting");
   const SeedCraftingItems = await getItems("SeedCrafting");
-  const EvoSeedsItems = await getItems("EvoSeeds");
   
   // Hardcoded Season Pass items
-const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Season Pass Levelup Lollipop", "Grow All", "Naval Wort"];
+  const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Season Pass Levelup Lollipop", "Grow All", "Naval Wort"];
 
   seedItems.push("Seeds");
   seed2Items.push("Seeds2");
@@ -43,7 +42,6 @@ const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Pr
   Egg2Items.push("Eggs2");
   GearCraftingItems.push("GearCrafting");
   SeedCraftingItems.push("SeedCrafting");
-  EvoSeedsItems.push("EvoSeeds");
   SeasonPassItems.push("SeasonPass");
 
   const cfg = {
@@ -63,7 +61,6 @@ const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Pr
     Egg2Items: {},
     GearCraftingItems: {},
     SeedCraftingItems: {},
-    EvoSeedsItems: {},
     SeasonPassItems: {},
   };
 
@@ -75,7 +72,6 @@ const SeasonPassItems = ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Pr
     Egg2Items,
     GearCraftingItems,
     SeedCraftingItems,
-    EvoSeedsItems,
     SeasonPassItems,
   };
 
@@ -115,7 +111,6 @@ function applySettings(a) {
       Egg2Items: s.Egg2Items,
       GearCraftingItems: s.GearCraftingItems,
       SeedCraftingItems: s.SeedCraftingItems,
-      EvoSeedsItems: s.EvoSeedsItems,
       SeasonPassItems: s.SeasonPassItems,
     };
 
@@ -132,7 +127,7 @@ function applySettings(a) {
 }
 
 async function AddHtml() {
-  const categories = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "GearCrafting", "SeedCrafting", "EvoSeeds"];
+  const categories = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "GearCrafting", "SeedCrafting"];
 
   for (const category of categories) {
     const items = await getItemJSON(category);
@@ -206,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       checkboxes.forEach(cb => {
         const isSelectAll = cb.classList.contains("SelectAll");
-        const isEnableCheckbox = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "EvoSeeds", "SeasonPass"].includes(cb.id);
+        const isEnableCheckbox = ["Seeds", "Seeds2", "Gears", "Eggs","Eggs2", "SeasonPass"].includes(cb.id);
         if (!isSelectAll && !isEnableCheckbox) {
           cb.checked = selectAllCheckbox.checked;
         }
