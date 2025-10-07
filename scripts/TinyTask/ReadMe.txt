@@ -35,4 +35,8 @@ Plant tomatoes here:
 - select > open
 - point it to the HarvestEvent.rec
 - left click > Prefs
-- Select continuous playback (note to stop it from running press: "control + Sheft + Alt + p" - all at the same time) this is play / pause
+- Select continuous playback (note to stop it from running press: "control + Shift + Alt + p" - all at the same time) this is play / pause
+
+
+
+** Recording made with this pet loadout: 3x raptors, and 2x grey mouse **  (there is a playback speed you can play with if you cant make this loadout work)

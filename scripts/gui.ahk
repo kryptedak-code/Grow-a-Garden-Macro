@@ -164,8 +164,7 @@ SendSettings(){
     SeedCraftingItems := getItems("SeedCrafting")
     EvoSeedsItems := getItems("EvoSeeds")
     
-    ; Hardcode Season Pass items since they're not in items.json
-    SeasonPassItems := ["Prime Crate", "Egg Yolk Mat", "Silver Fertilizer", "Prime Seed Pack", "Season Pass Levelup Lollipop", "Grow All", "Naval Wort"]
+    SeasonPassItems := getItems("SeasonPass")
     
     seedItems.Push("Seeds")
     seed2Items.Push("Seeds2")
@@ -274,14 +273,14 @@ SendSettings(){
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Eggs", key, "1")
         IniWrite(value, settingsFile, "Eggs", key)
-        SettingsJson.EggItems[item] := value  ; ← Changed from [key] to [item]
+        SettingsJson.EggItems[key] := value  ; ← Changed from [key] to [item]
     }
 
     for item in Egg2Items {
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "Eggs2", key, "0")
         IniWrite(value, settingsFile, "Eggs2", key)
-        SettingsJson.Egg2Items[item] := value  ; ← Changed from [key] to [item]
+        SettingsJson.Egg2Items[key] := value  ; ← Changed from [key] to [item]
     }
     for item in GearCraftingItems {
         key := StrReplace(item, " ", "")
@@ -305,7 +304,7 @@ SendSettings(){
         key := StrReplace(item, " ", "")
         value := IniRead(settingsFile, "SeasonPass", key, "0")
         IniWrite(value, settingsFile, "SeasonPass", key)
-        SettingsJson.SeasonPassItems[item] := value  ; ← Changed from [key] to [item]
+        SettingsJson.SeasonPassItems[key] := value  ; ← Changed from [key] to [item]
     }
 
 	MyWindow.PostWebMessageAsJson(JSON.stringify(SettingsJson))
